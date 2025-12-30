@@ -82,11 +82,11 @@ export default async function RootLayout({children}) {
                     pageMap={pageMap}
                     docsRepositoryBase="https://github.com/C-Traceback/c_traceback/tree/main"
                     footer={footer}
-                    search={
-                        <div className="w-full md:w-36 lg:w-48"> 
-                            <NextraSearchDialog pages={pages}/>
-                        </div>
-                    }
+                    // search={
+                    //     <div className="w-full md:w-36 lg:w-48"> 
+                    //         <NextraSearchDialog pages={pages}/>
+                    //     </div>
+                    // }
                     // ... Your additional layout options
                 >
                     {children}
