@@ -48,7 +48,7 @@ void open_file(const char *file_name)
     FILE *file = fopen(file_name, "r");
     if (!file)
     {
-        ctb_raise_error(CTB_FILE_NOT_FOUND_ERROR, "Failed to open file: %s", file_name);
+        ctb_raise_error(CTB_FILE_NOT_FOUND_ERROR, "Failed to open file: \"%s\"", file_name);
         return;
     }
     /* Do something */
@@ -71,11 +71,9 @@ Output:
 ```ansi
 [0;31m--------------------------------------------------[0m
 [1;31mTraceback[0m [0;31m(most recent call last):[0m
-  [38;5;240m(#00)[0m [38;5;240mFile "[0m[38;5;240m/home/alvinng/Desktop/c_traceback/examples/[0m[1;36mexample.c[0m[38;5;240m", line[0m [1;36m20[0m [38;5;240min[0m [1;36mmain[0m:
-    [0;31mdo_calculation(vec)[0m
-  [38;5;240m(#01)[0m [38;5;240mFile "[0m[38;5;240m/home/alvinng/Desktop/c_traceback/examples/[0m[1;36mexample.c[0m[38;5;240m", line[0m [1;36m35[0m [38;5;240min[0m [1;36mdo_calculation[0m:
-    [0;31mdivision_vec(vec, 0)[0m
-[1;31mValueError:[0m [0;31mDenominator must be nonzero! Received: 0.000000[0m
+  [38;5;240m(#00)[0m [38;5;240mFile "[0m[38;5;240m/Users/alvinng/Desktop/c_traceback/examples/[0m[1;36mexample_open_file.c[0m[38;5;240m", line[0m [1;36m21[0m [38;5;240min[0m [1;36mmain[0m:
+    [0;31mopen_file(FILE_PATH)[0m
+[1;31mFileNotFoundError:[0m [0;31mFailed to open file: "../test.txt"[0m
 [0;31m--------------------------------------------------[0m
 ```
 
