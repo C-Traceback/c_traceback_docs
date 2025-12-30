@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && pnpm postbuild",
     "preview": "npx serve@latest out",
     "postbuild": "pagefind --site .next/server/app --output-path public/_pagefind"
   },
