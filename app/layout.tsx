@@ -70,6 +70,16 @@ export default async function RootLayout({children}) {
             >
                 {/* <link rel="shortcut icon" href="/images/general/icon.svg"/> */}
                 {/* Your additional tags should be passed as `children` of `<Head>` element */}
+                <link
+                    rel="icon"
+                    href="/images/general/logo.svg"
+                    media="(prefers-color-scheme: light)"
+                />
+                <link
+                    rel="icon"
+                    href="/images/general/logo_dark.svg"
+                    media="(prefers-color-scheme: dark)"
+                />
             </Head>
             <body>
                 <Layout
