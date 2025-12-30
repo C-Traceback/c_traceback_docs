@@ -3,7 +3,7 @@ import {Head} from 'nextra/components'
 import {getPageMap} from 'nextra/page-map'
 import './globals.css'
 import {Metadata} from "next";
-import {NextraSearchDialog} from "@/components/nextra-search-dialog";
+// import {NextraSearchDialog} from "@/components/nextra-search-dialog";
 import {getPagesFromPageMap} from "@/lib/getPagesFromPageMap";
 
 import prefix from "@/prefix";
