@@ -6,12 +6,7 @@ import {Metadata} from "next";
 // import {NextraSearchDialog} from "@/components/nextra-search-dialog";
 import {getPagesFromPageMap} from "@/lib/getPagesFromPageMap";
 
-import prefix from "@/prefix";
-
 export const metadata: Metadata = {
-    icons: {
-        icon: `${prefix}/favicon.ico`
-    },
     title: {
         template: '%s - C Traceback',
         default: 'C Traceback'
@@ -25,14 +20,14 @@ const navbar = (
         logo={
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <img
-                    src={`${prefix}/images/general/logo.svg`}
+                    src={"/images/general/logo.svg"}
                     alt="Logo light"
                     width={20}
                     height={20}
                     className="block dark:hidden"
                 />
                 <img
-                    src={`${prefix}/images/general/logo_dark.svg`}
+                    src={"/images/general/logo_dark.svg"}
                     alt="Logo dark"
                     width={20}
                     height={20}

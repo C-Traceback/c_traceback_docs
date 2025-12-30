@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 Disallow: /private/
-Sitemap: https://c-traceback.github.io/c_traceback_docs/sitemap.xml
+Sitemap: https://www.ctraceback.com/c_traceback_docs/sitemap.xml
