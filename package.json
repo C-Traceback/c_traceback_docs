@@ -1,19 +1,19 @@
 {
-  "name": "nextra-docs-starter",
+  "name": "c-traceback-docs",
   "version": "0.0.1",
   "description": "A colorful, lightweight error-propagation framework for C.",
   "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "npx serve@latest out",
+    "preview": "npx serve@latest out",
     "postbuild": "pagefind --site .next/server/app --output-path public/_pagefind"
   },
   "repository": {
     "type": "module",
     "url": "https://github.com/C-Traceback/c_traceback"
   },
-  "author": "PHUCBM",
+  "author": "Ching-Yin Ng",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/C-Traceback/c_traceback/issues"
