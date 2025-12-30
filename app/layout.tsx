@@ -85,7 +85,7 @@ export default async function RootLayout({children}) {
                 <Layout
                     navbar={navbar}
                     pageMap={pageMap}
-                    docsRepositoryBase="https://github.com/C-Traceback/c_traceback/tree/main"
+                    docsRepositoryBase="https://github.com/C-Traceback/c_traceback_docs/tree/main"
                     footer={footer}
                     // search={
                     //     <div className="w-full md:w-36 lg:w-48"> 
