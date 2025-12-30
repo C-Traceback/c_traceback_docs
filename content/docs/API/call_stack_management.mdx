@@ -13,16 +13,63 @@ is what makes our library possible.
 
 ## API
 
-### `CTB_WRAP` <Badge text="Macro" />
+### `TRACE` <Badge text="Macro" />
 Wrapper macro for expression to automatically manage call stack frames.
 ```c
-CTB_WRAP(expr)
+TRACE(expr)
 ```
 
 #### Parameters
 <ParamsTable 
   params={[
-    { name: "expr", type: "N/A", desc: "The expression to be wrapped." },
+    { name: "expr", type: "N/A", desc: "The expression to be traced." },
+  ]}
+/>
+
+#### Returns
+<ParamsTable 
+  params={[
+    { name: "success", type: "bool", desc: "Whether the expression executed without error." },
+  ]}
+/>
+
+#### Expands to
+```c
+(ctb_push_call_stack_frame(__FILE__, __func__, __LINE__, #expr),                   \
+ (expr),                                                                           \
+ ctb_pop_call_stack_frame(__FILE__, __func__, __LINE__, #expr),                    \
+ !ctb_check_error_occurred())
+```
+
+#### Usage
+```c
+int function_a(void)
+{
+    bool success = TRACE(function_b());    // Trace a function call
+}
+
+int function_b(void)
+{
+    int i = 0;
+    (void) TRACE(i = 2);                   // Trace an assignment
+}
+```
+
+### `TRACE_VOID` <Badge text="Macro" />
+Wrapper macro for expression to automatically manage call stack frames without checking for error.
+```c
+TRACE_VOID(expr)
+```
+
+<Callout type="info">
+It is not recommended to use `TRACE_VOID`, unless you are sure that the expression
+will never raise an error.
+</Callout>
+
+#### Parameters
+<ParamsTable 
+  params={[
+    { name: "expr", type: "N/A", desc: "The expression to be traced." },
   ]}
 />
 
@@ -37,29 +84,23 @@ do                                                                              
 ```
 
 #### Usage
-```c
-int function_a(void)
-{
-    CTB_WRAP(function_b());    // Wraps a function call
-}
+Same as `TRACE` but without return value.
 
-int function_b(void)
-{
-    int i = 0;
-    CTB_WRAP(i = 2);           // Wraps an assignment
-}
-```
-
-### `CTB_Block` <Badge text="Macro" />
+### `TRACE_BLOCK` <Badge text="Macro" />
 Wrapper macro for a code block to automatically manage call stack frames.
 ```c
-CTB_BLOCK(...)
+TRACE_BLOCK(...)
 ```
+
+<Callout type="info">
+Same as `TRACE_VOID`, `TRACE_BLOCK` is not recommended as it will not check
+for error raised in the inner scope. It is better to use `TRY_BLOCK_GOTO`.
+</Callout>
 
 #### Parameters
 <ParamsTable 
   params={[
-    { name: "...", type: "N/A", desc: "The block of code to be wrapped." },
+    { name: "...", type: "N/A", desc: "The block of code to be traced." },
   ]}
 />
 
@@ -77,8 +118,8 @@ do                                                                              
 ```c
 int function_a(void)
 {
-    /* Wraps a code block */
-    CTB_BLOCK(
+    /* Trace a code block */
+    TRACE_BLOCK(
         int i = 0;
         if (i == 0)
         {
