@@ -86,6 +86,13 @@ export default async function RootLayout({children}) {
                     navbar={navbar}
                     pageMap={pageMap}
                     docsRepositoryBase="https://github.com/C-Traceback/c_traceback_docs/tree/main"
+                    feedback={{ link: "https://github.com/C-Traceback/c_traceback/issues" }}
+                    nextThemes={{
+                        "attribute": "class",
+                        "defaultTheme": "dark",
+                        "disableTransitionOnChange": false,
+                        "storageKey": "theme"
+                    }}
                     // footer={footer}
                     // search={
                     //     <div className="w-full md:w-36 lg:w-48"> 
