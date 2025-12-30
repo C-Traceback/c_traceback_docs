@@ -16,18 +16,18 @@ export default {
             timestamp: false,
         }
     },
-    docs: {
-        type: 'page',
-        title: 'Documentation',
-        items: DOCS_ITEMS
-    },
-    contact: {
+    tutorial: {
         type: 'page',
         theme: {
             layout: 'full',
             toc: true,
             timestamp: true,
         }
+    },
+    docs: {
+        type: 'page',
+        title: 'Documentation',
+        items: DOCS_ITEMS
     },
     sponsor: {
         type: 'page',
