@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 Disallow: /private/
-Sitemap: https://alvinng4.github.io/c_traceback/sitemap.xml
+Sitemap: https://c-traceback.github.io/c_traceback_web/sitemap.xml

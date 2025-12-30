@@ -6,19 +6,19 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "preview": "npx serve@latest out",
+    "start": "npx serve@latest out",
     "postbuild": "pagefind --site .next/server/app --output-path public/_pagefind"
   },
   "repository": {
     "type": "module",
-    "url": "https://github.com/alvinng4/c_traceback"
+    "url": "https://github.com/C-Traceback/c_traceback"
   },
   "author": "PHUCBM",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/alvinng4/c_traceback/issues"
+    "url": "https://github.com/C-Traceback/c_traceback/issues"
   },
-  "homepage": "https://github.com/alvinng4/c_traceback#readme",
+  "homepage": "https://github.com/C-Traceback/c_traceback#readme",
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
     "@tailwindcss/postcss": "^4.1.18",
