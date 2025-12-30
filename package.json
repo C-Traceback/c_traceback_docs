@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build && pnpm postbuild",
     "preview": "npx serve@latest out",
-    "postbuild": "pagefind --site .next/server/app --output-path public/_pagefind"
+    "postbuild": "pagefind --site ./out --output-path ./out/_pagefind"
   },
   "repository": {
     "type": "module",
