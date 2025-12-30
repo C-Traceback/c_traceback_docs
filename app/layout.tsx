@@ -6,33 +6,41 @@ import {Metadata} from "next";
 import {NextraSearchDialog} from "@/components/nextra-search-dialog";
 import {getPagesFromPageMap} from "@/lib/getPagesFromPageMap";
 
+import prefix from "@/prefix";
+
 export const metadata: Metadata = {
-    // Define your metadata here
-    // For more information on metadata API, see: https://nextjs.org/docs/app/building-your-application/optimizing/metadata
+    icons: {
+        icon: `${prefix}/favicon.ico`
+    },
+    title: {
+        template: '%s - C Traceback',
+        default: 'C Traceback'
+    },
+    description: 'A colorful, lightweight error-propagation framework for C.',
 }
 
 const navbar = (
     <Navbar
-        projectLink="https://github.com/alvinng4/c_traceback"
+        projectLink="https://github.com/C-traceback/c_traceback"
         logo={
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <img
-                src={"/images/general/logo.svg"}
-                alt="Logo light"
-                width={20}
-                height={20}
-                className="block dark:hidden"
-            />
-            <img
-                src={"/images/general/logo_dark.svg"}
-                alt="Logo dark"
-                width={20}
-                height={20}
-                className="hidden dark:block"
-            />
-            <span style={{ fontWeight: "bold", fontSize: "1.1rem" }}>
-                C Traceback
-            </span>
+                <img
+                    src={`${prefix}/images/general/logo.svg`}
+                    alt="Logo light"
+                    width={20}
+                    height={20}
+                    className="block dark:hidden"
+                />
+                <img
+                    src={`${prefix}/images/general/logo_dark.svg`}
+                    alt="Logo dark"
+                    width={20}
+                    height={20}
+                    className="hidden dark:block"
+                />
+                <span style={{ fontWeight: "bold", fontSize: "1.1rem" }}>
+                    C Traceback
+                </span>
             </div>
         }
         // ... Your additional navbar options
@@ -62,28 +70,28 @@ export default async function RootLayout({children}) {
             // Suggested by `next-themes` package https://github.com/pacocoursey/next-themes#with-app
             suppressHydrationWarning
         >
-        <Head
-            // ... Your additional head options
-        >
-            {/* <link rel="shortcut icon" href="/images/general/icon.svg"/> */}
-            {/* Your additional tags should be passed as `children` of `<Head>` element */}
-        </Head>
-        <body>
-        <Layout
-            navbar={navbar}
-            pageMap={pageMap}
-            docsRepositoryBase="https://github.com/alvinng4/c_traceback/tree/main"
-            footer={footer}
-            search={
-                <div className="w-full md:w-36 lg:w-48"> 
-                    <NextraSearchDialog pages={pages}/>
-                </div>
-            }
-            // ... Your additional layout options
-        >
-            {children}
-        </Layout>
-        </body>
+            <Head
+                // ... Your additional head options
+            >
+                {/* <link rel="shortcut icon" href="/images/general/icon.svg"/> */}
+                {/* Your additional tags should be passed as `children` of `<Head>` element */}
+            </Head>
+            <body>
+                <Layout
+                    navbar={navbar}
+                    pageMap={pageMap}
+                    docsRepositoryBase="https://github.com/C-Traceback/c_traceback/tree/main"
+                    footer={footer}
+                    search={
+                        <div className="w-full md:w-36 lg:w-48"> 
+                            <NextraSearchDialog pages={pages}/>
+                        </div>
+                    }
+                    // ... Your additional layout options
+                >
+                    {children}
+                </Layout>
+            </body>
         </html>
     )
 }
