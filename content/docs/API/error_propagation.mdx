@@ -1,0 +1,174 @@
+---
+title: Error propagation
+---
+
+import ParamsTable from "components/params-table.tsx";
+
+# Error propagation
+
+With the call stack infrastructure in place, the next challenge
+is to effectively propagate error states up the stack. Since C lacks
+built-in exception handling, we have to direct the control
+flow ourselves when an error occurs. To streamline this process and ensure
+tracebacks are preserved, we provide a set of tools: `ctb_raise_error`
+to raise an error, and `TRY_GOTO` or `TRY_BLOCK_GOTO` for jumping to the
+cleanup handlers when error occurs.
+
+## API
+
+### `ctb_raise_error` <Badge text="Function" />
+Raise an error with the current call stack.
+```c
+void ctb_raise_error(CTB_Error error, const char *restrict msg, ...);
+```
+
+<Callout type="warning">
+    `ctb_raise_error` simply records the error internally. It has no
+    effect if you forget to do error checking in the calling scope.
+</Callout>
+
+#### Parameters
+<ParamsTable 
+  params={[
+    { name: "error", type: "CTB_Error", desc: "The error type." },
+    { name: "msg", type: "const char*", desc: "Error message." },
+    { name: "...", type: "N/A", desc: "Additional arguments for formatting the message." },
+  ]}
+/>
+
+#### Usage
+```c
+#include <stdio.h>
+#include "c_traceback.h"
+
+#define FILE_PATH "../test.txt"
+
+void open_file(const char *file_name)
+{
+    FILE *file = fopen(file_name, "r");
+    if (!file)
+    {
+        ctb_raise_error(CTB_FILE_NOT_FOUND_ERROR, "Failed to open file: %s", file_name);
+        return;
+    }
+    /* Do something */
+    fclose(file);
+}
+
+int main(void)
+{
+    TRY_GOTO(open_file(FILE_PATH), error);
+    /* Do something */
+
+    return 0;
+
+error:
+    ctb_dump_traceback();
+    return 1;
+}
+```
+Output:
+```ansi
+[0;31m--------------------------------------------------[0m
+[1;31mTraceback[0m [0;31m(most recent call last):[0m
+  [38;5;240m(#00)[0m [38;5;240mFile "[0m[38;5;240m/home/alvinng/Desktop/c_traceback/examples/[0m[1;36mexample.c[0m[38;5;240m", line[0m [1;36m20[0m [38;5;240min[0m [1;36mmain[0m:
+    [0;31mdo_calculation(vec)[0m
+  [38;5;240m(#01)[0m [38;5;240mFile "[0m[38;5;240m/home/alvinng/Desktop/c_traceback/examples/[0m[1;36mexample.c[0m[38;5;240m", line[0m [1;36m35[0m [38;5;240min[0m [1;36mdo_calculation[0m:
+    [0;31mdivision_vec(vec, 0)[0m
+[1;31mValueError:[0m [0;31mDenominator must be nonzero! Received: 0.000000[0m
+[0;31m--------------------------------------------------[0m
+```
+
+### `TRY_GOTO` <Badge text="Macro" />
+Wrapper for an expression. If an error occurs after the expression, jump to label.
+```c
+TRY_GOTO(expr, label)
+```
+
+#### Parameters
+<ParamsTable 
+  params={[
+    { name: "expr", type: "N/A", desc: "The expression to be traced." },
+    { name: "label", type: "N/A", desc: "The label to jump to on error." },
+  ]}
+/>
+
+#### Expands to
+```c
+do                                                                                 \
+{                                                                                  \
+    ctb_push_call_stack_frame(__FILE__, __func__, __LINE__, #expr);                \
+    (expr);                                                                        \
+    ctb_pop_call_stack_frame(__FILE__, __func__, __LINE__, #expr);                 \
+    if (ctb_check_error_occurred())                                                \
+    {                                                                              \
+        goto label;                                                                \
+    }                                                                              \
+} while (0)
+```
+
+#### Usage
+```c
+int function_a(void)
+{
+    TRY_GOTO(function_b(), error);    // Trace a function call
+    /* Do something */
+
+    return 0;
+
+error:
+    return 1;
+}
+```
+
+### `TRY_BLOCK_GOTO` <Badge text="Macro" />
+Wrapper for a block of code. If an error occurs after the block executes, jump to label.
+```c
+TRY_BLOCK_GOTO(label, ...)
+```
+
+#### Parameters
+<ParamsTable 
+  params={[
+    { name: "label", type: "N/A", desc: "The label to jump to on error." },
+    { name: "...", type: "N/A", desc: "The block of code to be traced." },
+  ]}
+/>
+
+#### Expands to
+```c
+do                                                                                 \
+{                                                                                  \
+    ctb_push_call_stack_frame(__FILE__, __func__, __LINE__, #__VA_ARGS__);         \
+    __VA_ARGS__                                                                    \
+    ctb_pop_call_stack_frame(__FILE__, __func__, __LINE__, #__VA_ARGS__);          \
+    if (ctb_check_error_occurred())                                                \
+    {                                                                              \
+        goto label;                                                                \
+    }                                                                              \
+} while (0)
+```
+
+#### Usage
+```c
+int function_a(void)
+{
+    /* Trace a code block */
+    TRY_BLOCK_GOTO(
+        error,
+        int i = 0;
+        if (i == 0)
+        {
+            printf("%d", i);
+        }
+    );      // <-- Don't forget the semi-colon
+
+    // Note: i is not accessible here
+    // printf("%d", i); <-- Illegal!
+
+    return 0;
+
+error:
+    return 1;
+}
+```
