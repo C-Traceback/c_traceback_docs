@@ -1,5 +1,5 @@
 import {useMDXComponents as getThemeComponents} from 'nextra-theme-docs';
-import {Callout, FileTree} from "nextra/components";
+import {Callout, FileTree, Tabs} from "nextra/components";
 
 import { Badge } from "components/ui/badge";
 
@@ -13,5 +13,6 @@ export function useMDXComponents() {
         Badge: Badge,
         Callout: Callout,
         FileTree: FileTree,
+        Tabs: Tabs,
     }
 }
