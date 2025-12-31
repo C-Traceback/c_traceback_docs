@@ -11,6 +11,8 @@ Unfortunately, C doesn't provide an easy way to do this. Therefore, we will have
 function calls or code blocks with a macro. While this approach can be quite verbose, it
 is what makes our library possible.
 
+<Callout type="warning">Do not use jump statements inside macro, including `break`, `continue`, `return` and `goto`.</Callout>
+
 ## API
 
 ### `TRACE` <Badge text="Macro" />
@@ -51,7 +53,7 @@ int function_a(void)
 int function_b(void)
 {
     int i = 0;
-    (void) TRACE(i = 2);                   // Trace an assignment
+    (void) TRACE(i = 2);                   // Trace any expression
 }
 ```
 
@@ -62,8 +64,8 @@ TRACE_VOID(expr)
 ```
 
 <Callout type="info">
-It is not recommended to use `TRACE_VOID`, unless you are sure that the expression
-will never raise an error.
+Do not use `TRACE_VOID` unless you trust the outer scope will take care of the
+error handling. It is easy to miss error states stored in hidden context.
 </Callout>
 
 #### Parameters
@@ -93,8 +95,8 @@ TRACE_BLOCK(...)
 ```
 
 <Callout type="info">
-Same as `TRACE_VOID`, `TRACE_BLOCK` is not recommended as it will not check
-for error raised in the inner scope. It is better to use `TRY_BLOCK_GOTO`.
+Do not use `TRACE_BLOCK` unless you trust the outer scope will take care of the
+error handling. It is easy to miss error states stored in hidden context.
 </Callout>
 
 #### Parameters
