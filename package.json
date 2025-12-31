@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "module",
-    "url": "https://github.com/C-Traceback/c_traceback"
+    "url": "https://github.com/c-modules/c_traceback"
   },
   "author": "Ching-Yin Ng",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/C-Traceback/c_traceback/issues"
+    "url": "https://github.com/c-modules/c_traceback/issues"
   },
-  "homepage": "https://github.com/C-Traceback/c_traceback#readme",
+  "homepage": "https://github.com/c-modules/c_traceback#readme",
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
     "@tailwindcss/postcss": "^4.1.18",

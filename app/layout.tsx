@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 const navbar = (
     <Navbar
-        projectLink="https://github.com/C-traceback/c_traceback"
+        projectLink="https://github.com/c-modules/c_traceback"
         logo={
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <img
@@ -85,8 +85,8 @@ export default async function RootLayout({children}) {
                 <Layout
                     navbar={navbar}
                     pageMap={pageMap}
-                    docsRepositoryBase="https://github.com/C-Traceback/c_traceback_docs/tree/main"
-                    feedback={{ link: "https://github.com/C-Traceback/c_traceback/issues" }}
+                    docsRepositoryBase="https://github.com/c-modules/c_traceback_docs/tree/main"
+                    feedback={{ link: "https://github.com/c-modules/c_traceback/issues" }}
                     nextThemes={{
                         "attribute": "class",
                         "defaultTheme": "dark",

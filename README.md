@@ -1,7 +1,7 @@
 # C Traceback Docs
 This is the documentation site for C Traceback: [www.ctraceback.com](https://ctraceback.com)
 
-C traceback: https://github.com/C-Traceback/c_traceback
+C traceback: https://github.com/c-modules/c_traceback
 
 
 ## Website

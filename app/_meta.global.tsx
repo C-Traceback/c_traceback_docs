@@ -31,7 +31,7 @@ export default {
     },
     sponsor: {
         type: 'page',
-        "href": "https://github.com/C-traceback/c_traceback",
+        "href": "https://github.com/c-modules/c_traceback",
         title: (
             <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
                 Sponsor
