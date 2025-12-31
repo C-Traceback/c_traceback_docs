@@ -10,22 +10,64 @@ With the call stack infrastructure in place, the next challenge
 is to effectively propagate error states up the stack. Since C lacks
 built-in exception handling, we have to direct the control
 flow ourselves when an error occurs. To streamline this process and ensure
-tracebacks are preserved, we provide a set of tools: `ctb_raise_error`
-to raise an error, and `TRY_GOTO` or `TRY_BLOCK_GOTO` for jumping to the
-cleanup handlers when error occurs.
+tracebacks are preserved, we provide a set of tools below.
+
+<Callout type="warning">Do not use jump statements inside macro, including `break`, `continue`, `return` and `goto`.</Callout>
 
 ## API
 
-### `ctb_raise_error` <Badge text="Function" />
-Raise an error with the current call stack.
+### `RAISE_ERROR` <Badge text="Macro" />
+Wrapper for raising an error with the current call stack.
 ```c
-void ctb_raise_error(CTB_Error error, const char *restrict msg, ...);
+RAISE_ERROR(ctb_error, msg);
 ```
 
 <Callout type="warning">
-    `ctb_raise_error` simply records the error internally. It has no
+    `RAISE_ERROR` simply records the error internally. It has no
     effect if you forget to do error checking in the calling scope.
 </Callout>
+
+#### Expands to
+```c
+do                                                                                 \
+{                                                                                  \
+    ctb_raise_error(ctb_error, __FILE__, __LINE__, __func__, msg);                 \
+} while (0)
+```
+
+#### Parameters
+<ParamsTable 
+  params={[
+    { name: "error", type: "CTB_Error", desc: "The error type." },
+    { name: "msg", type: "const char*", desc: "Error message." },
+  ]}
+/>
+
+#### Usage
+```c
+RAISE_ERROR(CTB_MEMORY_ERROR, "Out of memory!");
+```
+
+### `RAISE_ERROR_FMT` <Badge text="Macro" />
+Wrapper for raising an error with formatted message with the current call stack.
+```c
+RAISE_ERROR_FMT(ctb_error, msg, ...);
+```
+
+<Callout type="warning">
+    `RAISE_ERROR_FMT` simply records the error internally. It has no
+    effect if you forget to do error checking in the calling scope.
+</Callout>
+
+#### Expands to
+```c
+do                                                                                 \
+{                                                                                  \
+    ctb_raise_error_fmt(                                                           \
+        ctb_error, __FILE__, __LINE__, __func__, msg, __VA_ARGS__                  \
+    );                                                                             \
+} while (0)
+```
 
 #### Parameters
 <ParamsTable 
@@ -67,12 +109,14 @@ error:
     return 1;
 }
 ```
-Output:
+##### Output
 ```ansi
 [0;31m--------------------------------------------------[0m
 [1;31mTraceback[0m [0;31m(most recent call last):[0m
-  [38;5;240m(#00)[0m [38;5;240mFile "[0m[38;5;240m/Users/alvinng/Desktop/c_traceback/examples/[0m[1;36mexample_open_file.c[0m[38;5;240m", line[0m [1;36m21[0m [38;5;240min[0m [1;36mmain[0m:
+  [38;5;240m(#00)[0m [38;5;240mFile "[0m[38;5;240m/Users/alvinng/Desktop/c_traceback/examples/[0m[1;36mexample_open_file.c[0m[38;5;240m", line[0m [1;36m23[0m [38;5;240min[0m [1;36mmain[0m:
     [0;31mopen_file(FILE_PATH)[0m
+  [38;5;240m(#01)[0m [38;5;240mFile "[0m[38;5;240m/Users/alvinng/Desktop/c_traceback/examples/[0m[1;36mexample_open_file.c[0m[38;5;240m", line[0m [1;36m12[0m [38;5;240min[0m [1;36mopen_file[0m:
+    [0;31m<Error raised here>[0m
 [1;31mFileNotFoundError:[0m [0;31mFailed to open file: "../test.txt"[0m
 [0;31m--------------------------------------------------[0m
 ```
