@@ -21,17 +21,9 @@ const navbar = (
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <img
                     src={"/images/general/logo.svg"}
-                    alt="Logo light"
+                    alt="Logo"
                     width={20}
                     height={20}
-                    className="block dark:hidden"
-                />
-                <img
-                    src={"/images/general/logo_dark.svg"}
-                    alt="Logo dark"
-                    width={20}
-                    height={20}
-                    className="hidden dark:block"
                 />
                 <span style={{ fontWeight: "bold", fontSize: "1.1rem" }}>
                     C Traceback
@@ -73,12 +65,6 @@ export default async function RootLayout({children}) {
                 <link
                     rel="icon"
                     href="/images/general/logo.svg"
-                    media="(prefers-color-scheme: light)"
-                />
-                <link
-                    rel="icon"
-                    href="/images/general/logo_dark.svg"
-                    media="(prefers-color-scheme: dark)"
                 />
             </Head>
             <body>
