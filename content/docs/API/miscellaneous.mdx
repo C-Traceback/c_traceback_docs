@@ -1,0 +1,60 @@
+---
+title: Miscellaneous
+---
+
+# Miscellaneous
+
+In this page, we provide some miscellaneous APIs from the C Traceback library.
+
+## API
+
+### `ctb_print_compilation_info` <Badge text="Function" />
+Print compilation information such as compiler version, compilation date, and configurations.
+```c
+void ctb_print_compilation_info(void);
+```
+
+#### Sample Output
+```ansi
+[0;36m───────────────────────── C Traceback Compilation Info ─────────────────────────[0m
+  [1;36m    %%%%%%%%%%%%    [0m    [1;36mC Traceback Version: [0mUnknown
+  [1;36m  %%%%%%%%%%%%%%%%  [0m    [1;36mOperating System: [0mLinux
+  [1;36m %%%%%%%%%%%%%%%%%% [0m    [1;36mBuild Date: [0mJan  3 2026 21:23:18
+  [1;36m%%%%%%%%%%*  %%%%%%%[0m    [1;36mCompiler: [0mGCC (version: 13)
+  [1;36m%%%%%%%*     %%%%%%%[0m    [1;36m[0m
+  [1;36m%%%%%*       %%%%%%%[0m    [1;36mConfig[0m
+  [1;36m%%%%%%%*     %%%%%%%[0m    [1;36m──────[0m
+  [1;36m%%%%%%%%%%*  %%%%%%%[0m    [1;36mMax Call Stack Depth: [0m32
+  [1;36m %%%%%%%%%%%%%%%%%% [0m    [1;36mMax Error Message Length: [0m256
+  [1;36m  %%%%%%%%%%%%%%%%  [0m    [1;36mMax Number of Errors: [0m8
+  [1;36m    %%%%%%%%%%%%    [0m    [1;36mDefault Terminal Width: [0m80
+                          [1;36mDefault File Width: [0m120
+                          [1;36mHorizontal Rule Max Width: [0m120
+                          [1;36mHorizontal Rule Min Width: [0m50
+
+[1;36mInline logging (example)[0m
+────────────────────────
+[1;31mError:[0m [38;5;240mFile "[0m[38;5;240m/home/alvinng/Desktop/c_traceback/src/[0m[1;36mtraceback.c[0m[38;5;240m", line[0m [1;36m522[0m [38;5;240min[0m [1;36mctb_print_compilation_info[0m:
+   [0;31mSample error for compilation info[0m
+[1;33mUserWarning:[0m [38;5;240mFile "[0m[38;5;240m/home/alvinng/Desktop/c_traceback/src/[0m[1;36mtraceback.c[0m[38;5;240m", line[0m [1;36m523[0m [38;5;240min[0m [1;36mctb_print_compilation_info[0m:
+   [0;33mSample warning for compilation info[0m
+[1;95mMessage:[0m [38;5;240mFile "[0m[38;5;240m/home/alvinng/Desktop/c_traceback/src/[0m[1;36mtraceback.c[0m[38;5;240m", line[0m [1;36m524[0m [38;5;240min[0m [1;36mctb_print_compilation_info[0m:
+   [0;35mSample info for compilation info[0m
+
+[1;36mTraceback (example)[0m
+───────────────────
+[1;31mTraceback[0m [0;31m(most recent call last):[0m
+  [38;5;240m(#00)[0m [38;5;240mFile "[0m[38;5;240mexample/[0m[1;36mexample.c[0m[38;5;240m", line[0m [1;36m10[0m [38;5;240min[0m [1;36mmain[0m:
+    [0;31mhello_world();[0m
+  [38;5;240m(#01)[0m [38;5;240mFile "[0m[38;5;240mexample/[0m[1;36mhello_world.c[0m[38;5;240m", line[0m [1;36m25[0m [38;5;240min[0m [1;36mcheck_terminal[0m:
+    [0;31mdata = compute(data)[0m
+  [38;5;240m(#02)[0m [38;5;240mFile "[0m[38;5;240mexample/libs/[0m[1;36mutils.c[0m[38;5;240m", line[0m [1;36m50[0m [38;5;240min[0m [1;36mcompute[0m:
+    [0;31mrecursion()[0m
+
+      [38;5;240m[... Skipped 123 frames ...][0m
+
+  [38;5;240m(#127)[0m [38;5;240mFile "[0m[38;5;240mexample/libs/[0m[1;36mutils.c[0m[38;5;240m", line[0m [1;36m75[0m [38;5;240min[0m [1;36mrecursion[0m:
+    [0;31m<error thrown here>[0m
+[1;31mError:[0m [0;31mSomething went wrong![0m
+[0;36m───────────────────────────────────── END ──────────────────────────────────────[0m
+```

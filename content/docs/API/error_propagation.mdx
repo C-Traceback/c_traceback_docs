@@ -1,5 +1,5 @@
 ---
-title: Error propagation
+title: Error Propagation
 ---
 
 import ParamsTable from "components/params-table.tsx";
@@ -16,22 +16,26 @@ tracebacks are preserved, we provide a set of tools below.
 
 ## API
 
-### `RAISE_ERROR` <Badge text="Macro" />
-Wrapper for raising an error with the current call stack.
+### `THROW` <Badge text="Macro" />
+Wrapper for throwing an error with the current call stack.
 ```c
-RAISE_ERROR(ctb_error, msg);
+void THROW(CTB_Error ctb_error, const char *restrict msg);
 ```
 
+<Callout type="info">
+    Pass `""` to `msg` when error message is not needed.
+</Callout>
+
 <Callout type="warning">
-    `RAISE_ERROR` simply records the error internally. It has no
-    effect if you forget to do error checking in the calling scope.
+    `THROW` simply records the error. It has no
+    effect if you forget to do error checking.
 </Callout>
 
 #### Expands to
 ```c
 do                                                                                 \
 {                                                                                  \
-    ctb_raise_error(ctb_error, __FILE__, __LINE__, __func__, msg);                 \
+    ctb_throw_error(ctb_error, __FILE__, __LINE__, __func__, msg);                 \
 } while (0)
 ```
 
@@ -45,25 +49,30 @@ do                                                                              
 
 #### Usage
 ```c
-RAISE_ERROR(CTB_MEMORY_ERROR, "Out of memory!");
+THROW(CTB_VALUE_ERROR, "");
+THROW(CTB_MEMORY_ERROR, "Out of memory!");
 ```
 
-### `RAISE_ERROR_FMT` <Badge text="Macro" />
+### `THROW_FMT` <Badge text="Macro" />
 Wrapper for raising an error with formatted message with the current call stack.
 ```c
-RAISE_ERROR_FMT(ctb_error, msg, ...);
+void THROW_FMT(CTB_Error ctb_error, const char *restrict msg, ...);
 ```
 
+<Callout type="info">
+    Pass `""` to `msg` when error message is not needed.
+</Callout>
+
 <Callout type="warning">
-    `RAISE_ERROR_FMT` simply records the error internally. It has no
-    effect if you forget to do error checking in the calling scope.
+    `THROW_FMT` simply records the error. It has no
+    effect if you forget to do error checking.
 </Callout>
 
 #### Expands to
 ```c
 do                                                                                 \
 {                                                                                  \
-    ctb_raise_error_fmt(                                                           \
+    ctb_throw_error_fmt(                                                           \
         ctb_error, __FILE__, __LINE__, __func__, msg, __VA_ARGS__                  \
     );                                                                             \
 } while (0)
@@ -90,7 +99,7 @@ void open_file(const char *file_name)
     FILE *file = fopen(file_name, "r");
     if (!file)
     {
-        ctb_raise_error(CTB_FILE_NOT_FOUND_ERROR, "Failed to open file: \"%s\"", file_name);
+        THROW_FMT(CTB_FILE_NOT_FOUND_ERROR, "Failed to open file: \"%s\"", file_name);
         return;
     }
     /* Do something */
@@ -111,20 +120,62 @@ error:
 ```
 ##### Output
 ```ansi
-[0;31m--------------------------------------------------[0m
+[0;31m────────────────────────────────────────────────────────────────────────────────[0m
 [1;31mTraceback[0m [0;31m(most recent call last):[0m
-  [38;5;240m(#00)[0m [38;5;240mFile "[0m[38;5;240m/Users/alvinng/Desktop/c_traceback/examples/[0m[1;36mexample_open_file.c[0m[38;5;240m", line[0m [1;36m23[0m [38;5;240min[0m [1;36mmain[0m:
+  [38;5;240m(#00)[0m [38;5;240mFile "[0m[38;5;240m/home/alvinng/Desktop/c_traceback/examples/[0m[1;36mexample_open_file.c[0m[38;5;240m", line[0m [1;36m21[0m [38;5;240min[0m [1;36mmain[0m:
     [0;31mopen_file(FILE_PATH)[0m
-  [38;5;240m(#01)[0m [38;5;240mFile "[0m[38;5;240m/Users/alvinng/Desktop/c_traceback/examples/[0m[1;36mexample_open_file.c[0m[38;5;240m", line[0m [1;36m12[0m [38;5;240min[0m [1;36mopen_file[0m:
-    [0;31m<Error raised here>[0m
+  [38;5;240m(#01)[0m [38;5;240mFile "[0m[38;5;240m/home/alvinng/Desktop/c_traceback/examples/[0m[1;36mexample_open_file.c[0m[38;5;240m", line[0m [1;36m12[0m [38;5;240min[0m [1;36mopen_file[0m:
+    [0;31m<Error thrown here>[0m
 [1;31mFileNotFoundError:[0m [0;31mFailed to open file: "../test.txt"[0m
-[0;31m--------------------------------------------------[0m
+[0;31m────────────────────────────────────────────────────────────────────────────────[0m
+```
+
+### `TRY` <Badge text="Macro" />
+Wrapper macro for expression to automatically manage call stack frames and check for errors.
+```c
+bool TRY(expr)
+```
+
+#### Parameters
+<ParamsTable 
+  params={[
+    { name: "expr", type: "N/A", desc: "The expression to be traced." },
+  ]}
+/>
+
+#### Returns
+<ParamsTable 
+  params={[
+    { name: "success", type: "bool", desc: "Whether the expression executed without error." },
+  ]}
+/>
+
+#### Expands to
+```c
+(ctb_push_call_stack_frame(__FILE__, __func__, __LINE__, #expr),                   \
+ (expr),                                                                           \
+ ctb_pop_call_stack_frame(__FILE__, __func__, __LINE__, #expr),                    \
+ !ctb_check_error())
+```
+
+#### Usage
+```c
+int function_a(void)
+{
+    bool success = TRY(function_b());    // Try a function call
+}
+
+int function_b(void)
+{
+    int i = 0;
+    (void) TRY(i = 2);                   // Try any expression
+}
 ```
 
 ### `TRY_GOTO` <Badge text="Macro" />
 Wrapper for an expression. If an error occurs after the expression, jump to label.
 ```c
-TRY_GOTO(expr, label)
+void TRY_GOTO(expr, label)
 ```
 
 #### Parameters
@@ -142,7 +193,7 @@ do                                                                              
     ctb_push_call_stack_frame(__FILE__, __func__, __LINE__, #expr);                \
     (expr);                                                                        \
     ctb_pop_call_stack_frame(__FILE__, __func__, __LINE__, #expr);                 \
-    if (ctb_check_error_occurred())                                                \
+    if (ctb_check_error())                                                         \
     {                                                                              \
         goto label;                                                                \
     }                                                                              \
@@ -166,7 +217,7 @@ error:
 ### `TRY_BLOCK_GOTO` <Badge text="Macro" />
 Wrapper for a block of code. If an error occurs after the block executes, jump to label.
 ```c
-TRY_BLOCK_GOTO(label, ...)
+void TRY_BLOCK_GOTO(label, ...)
 ```
 
 #### Parameters
@@ -184,7 +235,7 @@ do                                                                              
     ctb_push_call_stack_frame(__FILE__, __func__, __LINE__, #__VA_ARGS__);         \
     __VA_ARGS__                                                                    \
     ctb_pop_call_stack_frame(__FILE__, __func__, __LINE__, #__VA_ARGS__);          \
-    if (ctb_check_error_occurred())                                                \
+    if (ctb_check_error())                                                         \
     {                                                                              \
         goto label;                                                                \
     }                                                                              \
@@ -198,11 +249,8 @@ int function_a(void)
     /* Trace a code block */
     TRY_BLOCK_GOTO(
         error,
-        int i = 0;
-        if (i == 0)
-        {
-            printf("%d", i);
-        }
+        int *ptr;
+        printf("%d", *ptr);   // Oops, segmentation fault
     );      // <-- Don't forget the semi-colon
 
     // Note: i is not accessible here
@@ -214,3 +262,92 @@ error:
     return 1;
 }
 ```
+
+### `ctb_check_error` <Badge text="Function" />
+Check if any error has occurred.
+```c
+bool ctb_check_error(void);
+```
+
+#### Returns
+<ParamsTable 
+  params={[
+    { name: "error", type: "bool", desc: "Whether an error has occurred" },
+  ]}
+/>
+
+#### Usage
+```c
+if(ctb_check_error())
+{
+    goto error;
+}
+```
+
+### `ctb_check_error` <Badge text="Function" />
+Clear all recorded errors.
+```c
+void ctb_clear_error(void);
+```
+<Callout type="warning">This function is not recommended as exception handling is not formally supported</Callout>
+
+### `ctb_dump_traceback` <Badge text="Function" />
+Dump the traceback of all recorded errors to stderr and clear errors.
+```c
+void ctb_dump_traceback(void);
+```
+
+#### Usage
+```c
+#include <stdio.h>
+
+#include "c_traceback.h"
+
+#define FILE_PATH "../test.txt"
+
+void open_file(const char *file_name)
+{
+    FILE *file = fopen(file_name, "r");
+    if (!file)
+    {
+        THROW_FMT(CTB_FILE_NOT_FOUND_ERROR, "Failed to open file: \"%s\"", file_name);
+        return;
+    }
+    /* Do something */
+    fclose(file);
+}
+
+int main(void)
+{
+    TRY_GOTO(open_file(FILE_PATH), error);
+    /* Do something */
+
+    return 0;
+
+error:
+    ctb_dump_traceback();
+    return 1;
+}
+```
+
+##### Output
+```ansi
+[0;31m────────────────────────────────────────────────────────────────────────────────[0m
+[1;31mTraceback[0m [0;31m(most recent call last):[0m
+  [38;5;240m(#00)[0m [38;5;240mFile "[0m[38;5;240m/home/alvinng/Desktop/c_traceback/examples/[0m[1;36mexample_open_file.c[0m[38;5;240m", line[0m [1;36m21[0m [38;5;240min[0m [1;36mmain[0m:
+    [0;31mopen_file(FILE_PATH)[0m
+  [38;5;240m(#01)[0m [38;5;240mFile "[0m[38;5;240m/home/alvinng/Desktop/c_traceback/examples/[0m[1;36mexample_open_file.c[0m[38;5;240m", line[0m [1;36m12[0m [38;5;240min[0m [1;36mopen_file[0m:
+    [0;31m<Error thrown here>[0m
+[1;31mFileNotFoundError:[0m [0;31mFailed to open file: "../test.txt"[0m
+[0;31m────────────────────────────────────────────────────────────────────────────────[0m
+```
+
+### `ctb_log_traceback` <Badge text="Function" />
+Log the traceback of all recorded errors to stderr.
+```c
+void ctb_log_traceback(void);
+```
+
+<Callout info="warning">You should use 
+`ctb_dump_traceback` unless the error
+states are needed for further use.</Callout>

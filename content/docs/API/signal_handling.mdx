@@ -1,0 +1,76 @@
+---
+title: Signal Handling
+---
+
+# Signal Handling
+When an application crashes due to a Segmentation Fault
+or Abort signal, the default behavior is often to terminate
+silently or leave a cryptic core dump. We provides an API
+to install the signal handlers and dump the traceback
+automatically when your program fails.
+
+## API
+
+### `ctb_install_signal_handler` <Badge text="Function" />
+Install signal handlers for C Traceback.
+```c
+void ctb_install_signal_handler(void);
+```
+
+<Callout type="warning">This will works 99% of the time, but it can fails. To dump the traceback, 
+we will have to access the thread-local context with static storage, which is not async-signal-safe.
+You may lose the core dump if it fails.</Callout>
+
+#### Usage
+```c
+#include <stdio.h>
+
+#include "c_traceback.h"
+
+void some_function(void)
+{
+    int *ptr = NULL;
+    THROW(CTB_BLOCKING_IO_ERROR, "Hello! This is another test error before segfault.");
+    printf("value: %d\n", *ptr); // This will cause a segmentation fault
+}
+
+int main(void)
+{
+    ctb_install_signal_handler();
+    THROW(CTB_BUFFER_ERROR, "Hello! This is a test error before segfault.");
+
+    TRACE(some_function());
+
+    return 0;
+}
+```
+
+##### Output
+
+<Callout type="info">The output is a bit ugly as we lose access to many functions
+due to limitations of signal handler.</Callout>
+```ansi
+
+--------------------------------------------------------------------------------
+(#00) Traceback (most recent call last):
+  (#00) File "/home/alvinng/Desktop/c_traceback/examples/example_seg_fault.c", line 15 in main:
+    <Error thrown here>
+BufferError: Hello! This is a test error before segfault.
+
+During handling of the above exception, another exception occurred:
+
+(#01) Traceback (most recent call last):
+  (#00) File "/home/alvinng/Desktop/c_traceback/examples/example_seg_fault.c", line 17 in main:
+    some_function()
+  (#01) File "/home/alvinng/Desktop/c_traceback/examples/example_seg_fault.c", line 8 in some_function:
+    <Error thrown here>
+BlockingIOError: Hello! This is another test error before segfault.
+
+During handling of the above exception, another exception occurred:
+
+(#02) Traceback (most recent call last):
+  (#00) File "/home/alvinng/Desktop/c_traceback/examples/example_seg_fault.c", line 17 in main:
+    some_function()
+SignalSegmentationFault
+--------------------------------------------------------------------------------
+```
