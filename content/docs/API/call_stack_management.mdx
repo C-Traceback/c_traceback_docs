@@ -25,7 +25,7 @@ void TRACE(expr)
 Always use `TRY` instead of `TRACE` when error handling matters.
 It is easy to miss errors as `TRACE` are not checking for errors stored
 in context.
-[See `TRY`](/docs/API/error_propagation#try-)
+[See `TRY`](/docs/API/call_stack_management#try-)
 </Callout>
 
 #### Parameters
@@ -69,7 +69,7 @@ void TRACE_BLOCK(...)
 Always call `ctb_check_error` after `TRACE_BLOCK` when error handling matters.
 It is easy to miss errors as `TRACE_BLOCK` are not checking for errors stored
 in context.
-[See `ctb_check_error`](/docs/API/error_propagation#ctb_check_error-)
+[See `ctb_check_error`](/docs/API/throwing_errors#ctb_check_error-)
 </Callout>
 
 #### Parameters
@@ -101,5 +101,138 @@ int function_a(void)
 
     // Note: i is not accessible here
     // printf("%d", i); <-- Illegal!
+}
+```
+
+### `TRY` <Badge text="Macro" />
+Wrapper macro for expression to automatically manage call stack frames and check for errors.
+```c
+bool TRY(expr)
+```
+
+#### Parameters
+<ParamsTable 
+  params={[
+    { name: "expr", type: "N/A", desc: "The expression to be traced." },
+  ]}
+/>
+
+#### Returns
+<ParamsTable 
+  params={[
+    { name: "success", type: "bool", desc: "Whether the expression executed without error." },
+  ]}
+/>
+
+#### Expands to
+```c
+(ctb_push_call_stack_frame(__FILE__, __func__, __LINE__, #expr),                   \
+ (expr),                                                                           \
+ ctb_pop_call_stack_frame(__FILE__, __func__, __LINE__, #expr),                    \
+ !ctb_check_error())
+```
+
+#### Usage
+```c
+int function_a(void)
+{
+    bool success = TRY(function_b());    // Try a function call
+}
+
+int function_b(void)
+{
+    int i = 0;
+    (void) TRY(i = 2);                   // Try any expression
+}
+```
+
+### `TRY_GOTO` <Badge text="Macro" />
+Wrapper for an expression. If an error occurs after the expression, jump to label.
+```c
+void TRY_GOTO(expr, label)
+```
+
+#### Parameters
+<ParamsTable 
+  params={[
+    { name: "expr", type: "N/A", desc: "The expression to be traced." },
+    { name: "label", type: "N/A", desc: "The label to jump to on error." },
+  ]}
+/>
+
+#### Expands to
+```c
+do                                                                                 \
+{                                                                                  \
+    ctb_push_call_stack_frame(__FILE__, __func__, __LINE__, #expr);                \
+    (expr);                                                                        \
+    ctb_pop_call_stack_frame(__FILE__, __func__, __LINE__, #expr);                 \
+    if (ctb_check_error())                                                         \
+    {                                                                              \
+        goto label;                                                                \
+    }                                                                              \
+} while (0)
+```
+
+#### Usage
+```c
+int function_a(void)
+{
+    TRY_GOTO(function_b(), error);    // Trace a function call
+    /* Do something */
+
+    return 0;
+
+error:
+    return 1;
+}
+```
+
+### `TRY_BLOCK_GOTO` <Badge text="Macro" />
+Wrapper for a block of code. If an error occurs after the block executes, jump to label.
+```c
+void TRY_BLOCK_GOTO(label, ...)
+```
+
+#### Parameters
+<ParamsTable 
+  params={[
+    { name: "label", type: "N/A", desc: "The label to jump to on error." },
+    { name: "...", type: "N/A", desc: "The block of code to be traced." },
+  ]}
+/>
+
+#### Expands to
+```c
+do                                                                                 \
+{                                                                                  \
+    ctb_push_call_stack_frame(__FILE__, __func__, __LINE__, #__VA_ARGS__);         \
+    __VA_ARGS__                                                                    \
+    ctb_pop_call_stack_frame(__FILE__, __func__, __LINE__, #__VA_ARGS__);          \
+    if (ctb_check_error())                                                         \
+    {                                                                              \
+        goto label;                                                                \
+    }                                                                              \
+} while (0)
+```
+
+#### Usage
+```c
+int function_a(void)
+{
+    /* Trace a code block */
+    TRY_BLOCK_GOTO(
+        error,
+        int *ptr;
+        printf("%d", *ptr);   // Oops, segmentation fault
+    );      // <-- Don't forget the semi-colon
+
+    // Note: i is not accessible here
+    // printf("%d", i); <-- Illegal!
+
+    return 0;
+
+error:
+    return 1;
 }
 ```

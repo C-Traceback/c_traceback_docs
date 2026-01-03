@@ -1,18 +1,15 @@
 ---
-title: Error Propagation
+title: Error Generation
 ---
 
 import ParamsTable from "components/params-table.tsx";
 
-# Error propagation
+# Throwing Errors and Logging
 
-With the call stack infrastructure in place, the next challenge
-is to effectively propagate error states up the stack. Since C lacks
-built-in exception handling, we have to direct the control
-flow ourselves when an error occurs. To streamline this process and ensure
-tracebacks are preserved, we provide a set of tools below.
-
-<Callout type="warning">Do not use jump statements inside macro, including `break`, `continue`, `return` and `goto`.</Callout>
+While [Call Stack Management](/docs/API/call_stack_management) handles the execution flow and context,
+we need specific tools to originate and visualize errors. This
+section provides the tools to throw errors, checking the error states,
+and dumping traceback when error occurs.
 
 ## API
 
@@ -58,11 +55,6 @@ Wrapper for raising an error with formatted message with the current call stack.
 ```c
 void THROW_FMT(CTB_Error ctb_error, const char *restrict msg, ...);
 ```
-
-<Callout type="info">
-    Pass `""` to `msg` when error message is not needed.
-</Callout>
-
 <Callout type="warning">
     `THROW_FMT` simply records the error. It has no
     effect if you forget to do error checking.
@@ -128,139 +120,6 @@ error:
     [0;31m<Error thrown here>[0m
 [1;31mFileNotFoundError:[0m [0;31mFailed to open file: "../test.txt"[0m
 [0;31m────────────────────────────────────────────────────────────────────────────────[0m
-```
-
-### `TRY` <Badge text="Macro" />
-Wrapper macro for expression to automatically manage call stack frames and check for errors.
-```c
-bool TRY(expr)
-```
-
-#### Parameters
-<ParamsTable 
-  params={[
-    { name: "expr", type: "N/A", desc: "The expression to be traced." },
-  ]}
-/>
-
-#### Returns
-<ParamsTable 
-  params={[
-    { name: "success", type: "bool", desc: "Whether the expression executed without error." },
-  ]}
-/>
-
-#### Expands to
-```c
-(ctb_push_call_stack_frame(__FILE__, __func__, __LINE__, #expr),                   \
- (expr),                                                                           \
- ctb_pop_call_stack_frame(__FILE__, __func__, __LINE__, #expr),                    \
- !ctb_check_error())
-```
-
-#### Usage
-```c
-int function_a(void)
-{
-    bool success = TRY(function_b());    // Try a function call
-}
-
-int function_b(void)
-{
-    int i = 0;
-    (void) TRY(i = 2);                   // Try any expression
-}
-```
-
-### `TRY_GOTO` <Badge text="Macro" />
-Wrapper for an expression. If an error occurs after the expression, jump to label.
-```c
-void TRY_GOTO(expr, label)
-```
-
-#### Parameters
-<ParamsTable 
-  params={[
-    { name: "expr", type: "N/A", desc: "The expression to be traced." },
-    { name: "label", type: "N/A", desc: "The label to jump to on error." },
-  ]}
-/>
-
-#### Expands to
-```c
-do                                                                                 \
-{                                                                                  \
-    ctb_push_call_stack_frame(__FILE__, __func__, __LINE__, #expr);                \
-    (expr);                                                                        \
-    ctb_pop_call_stack_frame(__FILE__, __func__, __LINE__, #expr);                 \
-    if (ctb_check_error())                                                         \
-    {                                                                              \
-        goto label;                                                                \
-    }                                                                              \
-} while (0)
-```
-
-#### Usage
-```c
-int function_a(void)
-{
-    TRY_GOTO(function_b(), error);    // Trace a function call
-    /* Do something */
-
-    return 0;
-
-error:
-    return 1;
-}
-```
-
-### `TRY_BLOCK_GOTO` <Badge text="Macro" />
-Wrapper for a block of code. If an error occurs after the block executes, jump to label.
-```c
-void TRY_BLOCK_GOTO(label, ...)
-```
-
-#### Parameters
-<ParamsTable 
-  params={[
-    { name: "label", type: "N/A", desc: "The label to jump to on error." },
-    { name: "...", type: "N/A", desc: "The block of code to be traced." },
-  ]}
-/>
-
-#### Expands to
-```c
-do                                                                                 \
-{                                                                                  \
-    ctb_push_call_stack_frame(__FILE__, __func__, __LINE__, #__VA_ARGS__);         \
-    __VA_ARGS__                                                                    \
-    ctb_pop_call_stack_frame(__FILE__, __func__, __LINE__, #__VA_ARGS__);          \
-    if (ctb_check_error())                                                         \
-    {                                                                              \
-        goto label;                                                                \
-    }                                                                              \
-} while (0)
-```
-
-#### Usage
-```c
-int function_a(void)
-{
-    /* Trace a code block */
-    TRY_BLOCK_GOTO(
-        error,
-        int *ptr;
-        printf("%d", *ptr);   // Oops, segmentation fault
-    );      // <-- Don't forget the semi-colon
-
-    // Note: i is not accessible here
-    // printf("%d", i); <-- Illegal!
-
-    return 0;
-
-error:
-    return 1;
-}
 ```
 
 ### `ctb_check_error` <Badge text="Function" />
