@@ -4,7 +4,6 @@ import { Heart } from "lucide-react";
 const DOCS_ITEMS: MetaRecord = {
     index: '',
     navigation: '',
-    tips: '',
 }
 
 export default {
