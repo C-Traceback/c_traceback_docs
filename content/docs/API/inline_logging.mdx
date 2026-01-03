@@ -78,15 +78,15 @@ do                                                                              
 #### Usage
 ```c
 LOG_ERROR_INLINE_FMT(
-    CTB_ARITHMETIC_ERROR,
-    "(Test %d) This should be inline formatted error with arithmetic error",
+    CTB_SYSTEM_ERROR,
+    "(Test %d) This should be inline formatted error with system error",
     1
 );
 ```
 ##### Output
 ```ansi
-[1;31mArithmeticError:[0m [38;5;240mFile "[0m[38;5;240m/Users/alvinng/Desktop/c_traceback/examples[0m[1;36m/example_inline.c[0m[38;5;240m", line[0m [1;36m32[0m [38;5;240min[0m [1;36minline_error[0m:
-   [0;31m(Test 1) This should be inline formatted error with arithmetic error[0m
+[1;31mSystemError:[0m [38;5;240mFile "[0m[38;5;240m/Users/alvinng/Desktop/c_traceback/examples[0m[1;36m/example_inline.c[0m[38;5;240m", line[0m [1;36m32[0m [38;5;240min[0m [1;36minline_error[0m:
+   [0;31m(Test 1) This should be inline formatted error with system error[0m
 ```
 
 ### `LOG_WARNING_INLINE` <Badge text="Macro" />

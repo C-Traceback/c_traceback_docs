@@ -11,61 +11,21 @@ Unfortunately, C doesn't provide an easy way to do this. Therefore, we will have
 function calls or code blocks with a macro. While this approach can be quite verbose, it
 is what makes our library possible.
 
-<Callout type="warning">Do not use jump statements inside macro, including `break`, `continue`, `return` and `goto`.</Callout>
+<Callout type="warning">Do not use jump statements to jump outside macro, including `break`, `continue`, `return` and `goto`.</Callout>
 
 ## API
 
 ### `TRACE` <Badge text="Macro" />
-Wrapper macro for expression to automatically manage call stack frames.
+Wrapper macro for expression to automatically manage call stack frames without checking for errors.
 ```c
-TRACE(expr)
-```
-
-#### Parameters
-<ParamsTable 
-  params={[
-    { name: "expr", type: "N/A", desc: "The expression to be traced." },
-  ]}
-/>
-
-#### Returns
-<ParamsTable 
-  params={[
-    { name: "success", type: "bool", desc: "Whether the expression executed without error." },
-  ]}
-/>
-
-#### Expands to
-```c
-(ctb_push_call_stack_frame(__FILE__, __func__, __LINE__, #expr),                   \
- (expr),                                                                           \
- ctb_pop_call_stack_frame(__FILE__, __func__, __LINE__, #expr),                    \
- !ctb_check_error_occurred())
-```
-
-#### Usage
-```c
-int function_a(void)
-{
-    bool success = TRACE(function_b());    // Trace a function call
-}
-
-int function_b(void)
-{
-    int i = 0;
-    (void) TRACE(i = 2);                   // Trace any expression
-}
-```
-
-### `TRACE_VOID` <Badge text="Macro" />
-Wrapper macro for expression to automatically manage call stack frames without checking for error.
-```c
-TRACE_VOID(expr)
+void TRACE(expr)
 ```
 
 <Callout type="info">
-Do not use `TRACE_VOID` unless you trust the outer scope will take care of the
-error handling. It is easy to miss error states stored in hidden context.
+Always use `TRY` instead of `TRACE` when error handling matters.
+It is easy to miss errors as `TRACE` are not checking for errors stored
+in context.
+[See `TRY`](/docs/API/error_propagation#try-)
 </Callout>
 
 #### Parameters
@@ -86,17 +46,30 @@ do                                                                              
 ```
 
 #### Usage
-Same as `TRACE` but without return value.
+```c
+int function_a(void)
+{
+    TRACE(function_b());    // Trace a function call
+}
+
+int function_b(void)
+{
+    int i = 0;
+    TRACE(i = 2);           // Trace any expression
+}
+```
 
 ### `TRACE_BLOCK` <Badge text="Macro" />
-Wrapper macro for a code block to automatically manage call stack frames.
+Wrapper macro for a code block to automatically manage call stack frames without checking for errors.
 ```c
-TRACE_BLOCK(...)
+void TRACE_BLOCK(...)
 ```
 
 <Callout type="info">
-Do not use `TRACE_BLOCK` unless you trust the outer scope will take care of the
-error handling. It is easy to miss error states stored in hidden context.
+Always call `ctb_check_error` after `TRACE_BLOCK` when error handling matters.
+It is easy to miss errors as `TRACE_BLOCK` are not checking for errors stored
+in context.
+[See `ctb_check_error`](/docs/API/error_propagation#ctb_check_error-)
 </Callout>
 
 #### Parameters
@@ -122,11 +95,8 @@ int function_a(void)
 {
     /* Trace a code block */
     TRACE_BLOCK(
-        int i = 0;
-        if (i == 0)
-        {
-            printf("%d", i);
-        }
+        int *ptr;
+        printf("%d", *ptr);   // Oops, segmentation fault
     );      // <-- Don't forget the semi-colon
 
     // Note: i is not accessible here

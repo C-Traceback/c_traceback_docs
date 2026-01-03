@@ -1,0 +1,80 @@
+---
+title: Error and Warning Types
+---
+
+# Error and Warning Types
+
+Inspired by Python, we provide the following error and
+warning hierarchy. It is for reference only as we decided
+not to implement exceptions catching.
+
+## Error Hierarchy
+To throw an error with a type below, add CTB as prefix and turn it into
+screaming snake case. For example, `ValueError` becomes `CTB_VALUE_ERROR`.
+```
+    Error
+    ├── SystemError
+    ├── ResourceError
+    ├── ValueError
+    ├── SignalError
+    │    ├── SignalAbort
+    │    ├── SignalSegmentationFault
+    │    ├── SignalInvalidInstruction
+    │    ├── SignalTermination
+    │    ├── SignalFloatingPointException
+    │    └── SignalKeyboardInterrupt
+    ├── MemoryError
+    │    ├── OutOfMemoryError
+    │    └── BufferError
+    ├── PointerError
+    │    └── NullPointerError
+    ├── RuntimeError
+    │    └── NotImplementedError
+    ├── LookupError
+    │    ├── IndexError
+    │    └── KeyError
+    ├── MathError
+    │    ├── MathDomainError
+    │    ├── MathOverflowError
+    │    ├── MathUnderflowError
+    │    └── ZeroDivisionError
+    ├── OSError
+    │    ├── BlockingIOError
+    │    ├── ChildProcessError
+    │    ├── FileExistsError
+    │    ├── FileNotFoundError
+    │    ├── InterruptedError
+    │    ├── IsADirectoryError
+    │    ├── NotADirectoryError
+    │    ├── PermissionError
+    │    ├── ProcessLookupError
+    │    └── TimeoutError
+    ├── NetworkError
+    │    ├── ConnectionFailedError
+    │    └── HostUnreachableError
+    ├── ConcurrencyError
+    │    └── ThreadCreationError
+    ├── ParseError
+    │    ├── EncodingError
+    │    ├── InvalidFormatError
+    │    ├── SyntaxError
+    │    ├── UnexpectedEOFError
+    │    └── ChecksumMismatchError
+    └── DynamicLinkError
+         └── LibraryLoadError
+```
+
+## Warning Hierarchy
+Same as error, simply add CTB as prefix and turn it into
+screaming snake case. For example, `ResourceWarning` becomes `CTB_RESOURCE_WARNING`.
+```
+    Warning
+    ├── DeprecationWarning
+    ├── PerformanceWarning
+    ├── ResourceWarning
+    ├── PrecisionWarning
+    ├── CompatibilityWarning
+    ├── SecurityWarning
+    ├── ParseWarning
+    └── UserWarning
+```
