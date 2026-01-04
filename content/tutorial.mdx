@@ -391,16 +391,19 @@ Segmentation fault (core dumped)
 ## Division
 This one is simple. We simply pass the array, `n` and denominator to the function.
 
-### `LOG_INLINE_WARNING_FMT` <Badge text="Function" />
-However, we need to be careful for division by zero. Typically, we don't want to
-throw an error immediately for these numerical issues, but log an warning message instead.
+### `LOG_WARNING_FMT` <Badge text="Function" />
+However, we need to be careful for division by zero. While this could be an issue,
+sometimes a simple warning is more suitable than throwing an error and terminating the program.
+
+We can use the [`LOG_WARNING_FMT`](/docs/API/logging#log_warning_fmt-) API to log a warning
+message without stacktrace.
 ```c
 void divide_vec(double *arr, const size_t n, const double denominator)
 {
     if (denominator == 0.0)
     {
         // Division by zero
-        LOG_INLINE_WARNING_FMT(CTB_MATH_ERROR, "Denominator should not be zero! Received: %lf.", denominator);
+        LOG_WARNING_FMT(CTB_MATH_ERROR, "Denominator should not be zero! Received: %lf.", denominator);
     }
 
     for (int i = 0; i < n; i++)
@@ -484,7 +487,7 @@ void divide_vec(double *arr, const size_t n, const double denominator)
     if (denominator == 0.0)
     {
         // Division by zero
-        LOG_WARNING_INLINE_FMT(CTB_WARNING, "Denominator should not be zero! Received: %lf.", denominator);
+        LOG_WARNING_FMT(CTB_WARNING, "Denominator should not be zero! Received: %lf.", denominator);
     }
 
     for (int i = 0; i < n; i++)
