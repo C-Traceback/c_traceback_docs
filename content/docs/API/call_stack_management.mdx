@@ -15,6 +15,13 @@ is what makes our library possible.
 
 ## API
 
+### `ctb_clear_context` <Badge text="Function" />
+Clear the C Traceback context (including errors and call stack).
+```c
+void ctb_clear_context(void);
+```
+<Callout type="info">If you are writing a library, you can call this at API entry to clear any remaining context.</Callout>
+
 ### `TRACE` <Badge text="Macro" />
 Wrapper macro for expression to automatically manage call stack frames without checking for errors.
 ```c
