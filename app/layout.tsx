@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     openGraph: {
         images: [
             {
-                url: "/images/general/compilation_info.png",
+                url: "/images/general/c_traceback.png",
                 alt: "C Traceback"
             }
         ],
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: 'C Traceback',
         description: 'A colorful, lightweight error-propagation framework for C.',
-        images: ['/images/general/compilation_info.png'],
+        images: ['/images/general/c_traceback.png'],
     }
 }
 
