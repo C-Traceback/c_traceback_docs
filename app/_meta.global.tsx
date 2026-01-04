@@ -3,7 +3,6 @@ import { Heart, Star, User } from "lucide-react";
 
 const DOCS_ITEMS: MetaRecord = {
     index: '',
-    navigation: '',
 }
 
 export default {
