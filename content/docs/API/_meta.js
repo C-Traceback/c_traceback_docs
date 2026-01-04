@@ -2,7 +2,7 @@ export default {
   'call_stack_management': '',
   'throwing_errors': '',
   'error_types': '',
-  'inline_logging': '',
+  'logging': '',
   'signal_handling': '',
   'miscellaneous': '',
 };
