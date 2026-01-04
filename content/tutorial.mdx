@@ -7,12 +7,10 @@ date: "2025-12-31"
 
 # Tutorial
 
-<Callout>This tutorial is not finished yet</Callout>
-
 ## Project Setup
 
 For demonstration, let us start with a simple vector calculation project.
-Below is the sample code written with C99. It does four things:
+It should do four things:
 
 1. Allocate memory for vector.
 2. Initialize values for vector.
@@ -67,12 +65,12 @@ int alloc_memory(double **arr, const size_t n)
 }
 ```
 While the function is fine for a simple project, it is better to have an error traceback
-and error message so that users know what happened without having to go through
+and error message, so that users know what happened when program crashes without having to go through
 your source code.
 
-### `RAISE_ERROR` <Badge text="Macro" />
-We can first make use of the `RAISE_ERROR` macro.
-Instead of returning a value, we raise an error instead.
+### `THROW` <Badge text="Macro" />
+We can first make use of the [`THROW`](/docs/API/throwing_errors#throw-) macro.
+Instead of returning a value, we throw an error instead.
 ```c /void/ {6-7}
 void alloc_memory(double **arr, const size_t n)
 {
@@ -80,28 +78,28 @@ void alloc_memory(double **arr, const size_t n)
     if (!(*arr))
     {
         // Failed to allocate memory
-        RAISE_ERROR(CTB_MEMORY_ERROR, "Failed to allocate memory for vector!");
+        THROW(CTB_MEMORY_ERROR, "Failed to allocate memory for vector!");
     }
 }
 ```
-However, it doesn't do much by itself. It only silently records an error.
+However, it doesn't do much by itself as it only silently records an error.
 We will have to modify some code in the `main` function.
 
-### `TRACE` <Badge text="Macro" />
-On the outer scope, we can wrap our function call with `TRACE`, which
-returns an boolean error value. On top of that, `TRACE` will manage
+### `TRY` <Badge text="Macro" />
+On the outer scope, we can wrap our function call with [`TRY`](/docs/API/call_stack_management#try-), which
+returns an boolean error value. On top of that, [`TRY`](/docs/API/call_stack_management#try-) will manage
 the call stack automatically for you.
 ```c /TRACE/
 /* Allocate memory */
 double *arr;
-if (!TRACE(alloc_memory(&arr, n)))
+if (!TRY(alloc_memory(&arr, n)))
 {
     goto error_clean_up;
 }
 ```
 
 ### `TRY_GOTO` <Badge text="Macro" />
-`TRY_GOTO` does the same thing as `TRACE`, but it jumps to a label when
+[`TRY_GOTO`](/docs/API/call_stack_management#try_goto-) does the same thing as [`TRY`](/docs/API/call_stack_management#try-), but it jumps to a label when
 the expression fails.
 ```c /TRY_GOTO
 /* Allocate memory */
@@ -130,14 +128,14 @@ error_clean_up:
 Below is the final code. Lets set `n` to 1000000000000000 to see what happens.
 ```c {10, 14, 19, 26, 31-32, 36-44}
 /**
- * \file: project.c
+ * \file: example_tut01.c
  */
  
 #include <stdio.h>
 #include <stdlib.h>
  
 #include "c_traceback.h"
-
+ 
 void alloc_memory(double **arr, const size_t n);
  
 int main(void)
@@ -170,86 +168,336 @@ void alloc_memory(double **arr, const size_t n)
     if (!(*arr))
     {
         // Failed to allocate memory
-        RAISE_ERROR(CTB_MEMORY_ERROR, "Failed to allocate memory for vector!");
+        THROW(CTB_MEMORY_ERROR, "Failed to allocate memory for vector!");
     }
 }
 
 ```
 #### Output
-`n` is too big to be allocated on any single computer.
+`n` should be too big to be allocated on your computer.
 You should see the traceback below.
 <Callout type="info">If you don't see the traceback, turn off optimization flags by using `-O0` as compilers could optimize the malloc away.</Callout>
 ```ansi
-[0;31m--------------------------------------------------[0m
+[0;31m────────────────────────────────────────────────────────────────────────────────[0m
 [1;31mTraceback[0m [0;31m(most recent call last):[0m
-  [38;5;240m(#00)[0m [38;5;240mFile "[0m[38;5;240m/Users/alvinng/Desktop/project/[0m[1;36mproject.c[0m[38;5;240m", line[0m [1;36m19[0m [38;5;240min[0m [1;36mmain[0m:
+  [38;5;240m(#00)[0m [38;5;240mFile "[0m[38;5;240m/home/alvinng/Desktop/c_traceback/examples/[0m[1;36mexample_tut01.c[0m[38;5;240m", line[0m [1;36m19[0m [38;5;240min[0m [1;36mmain[0m:
     [0;31malloc_memory(&arr, n)[0m
-  [38;5;240m(#01)[0m [38;5;240mFile "[0m[38;5;240m/Users/alvinng/Desktop/project/[0m[1;36mproject.c[0m[38;5;240m", line[0m [1;36m42[0m [38;5;240min[0m [1;36malloc_memory[0m:
-    [0;31m<Error raised here>[0m
+  [38;5;240m(#01)[0m [38;5;240mFile "[0m[38;5;240m/home/alvinng/Desktop/c_traceback/examples/[0m[1;36mexample_tut01.c[0m[38;5;240m", line[0m [1;36m42[0m [38;5;240min[0m [1;36malloc_memory[0m:
+    [0;31m<Error thrown here>[0m
 [1;31mMemoryError:[0m [0;31mFailed to allocate memory for vector![0m
-[0;31m--------------------------------------------------[0m
+[0;31m────────────────────────────────────────────────────────────────────────────────[0m
 ```
 
-
-
-
+## Initialize vector
+Again, for demonstrative purpose, we will write a function to initialize the vector.
 ```c
-/**
- * \file: project.c
- */
-
-#include <stdio.h>
-#include <stdlib.h>
-
-int alloc_memory(double **arr);
-void division(double *arr, double denominator, const int n);
-
-int main(void)
+void initialize_vec(double *arr, const size_t n)
 {
-    const int n = 1000;     // Vector size
-    const double denominator = 123.0;
-
-    /* Allocate memory */
-    double *arr;
-    if (!alloc_memory(&arr, n))
+    if (!arr)
     {
-        goto error;
+        // Null Pointer
+        THROW(CTB_NULL_POINTER_ERROR, "Received null pointer.");
     }
 
-    /* Initialize values */
     for (int i = 0; i < n; i++)
     {
         arr[i] = i;
     }
+}
+```
+In `main`, we should use `TRY_GOTO` to wrap the function call.
 
-    /* Do calculation */
-    division(arr, denominator, n);
-    
+### `ctb_install_signal_handler` <Badge text="Function" />
+Wait, what if `initialize_vec` received an `n` that's larger
+than the actual vector size? There is no way to check it
+inside the function, and it will trigger a segmentation fault.
+
+While we cannot avoid segmentation faults, we can use a signal
+handler to dump the traceback when the program crashes. Simply
+call [`ctb_install_signal_handler()`](/docs/API/signal_handling#ctb_install_signal_handler-)
+at program entry.
+
+Below is the final code. Let's try passing 1000 * n to trigger a segmentation fault.
+
+```c {11, 15, 17, 25, 50-62}
+/**
+ * \file: example_tut02.c
+ */
+ 
+#include <stdio.h>
+#include <stdlib.h>
+ 
+#include "c_traceback.h"
+ 
+void alloc_memory(double **arr, const size_t n);
+void initialize_vec(double *arr, const size_t n);
+ 
+int main(void)
+{
+    ctb_install_signal_handler();
+
+    const size_t n = 1000;     // Vector size
+    const double denominator = 123.0;
+ 
+    /* Allocate memory */
+    double *arr;
+    TRY_GOTO(alloc_memory(&arr, n), error_clean_up);
+ 
+    /* Initialize values */
+    TRY_GOTO(initialize_vec(arr, 1000 * n), error_clean_up);
+ 
+    /* Division */
+ 
     /* Clean up */
     free(arr);
     return 0;
-
-error:
+ 
+error_clean_up:
     /* Error clean up */
     free(arr);
+    ctb_dump_traceback();
     return 1;
 }
-
-int alloc_memory(double **arr, const int n)
+ 
+void alloc_memory(double **arr, const size_t n)
 {
-    *arr = malloc(N * sizeof(double));
+    *arr = malloc(n * sizeof(double));
     if (!(*arr))
     {
-        return 1;   // Failed to allocate memory
+        // Failed to allocate memory
+        THROW(CTB_MEMORY_ERROR, "Failed to allocate memory for vector!");
     }
-    return 0;
+}
+ 
+void initialize_vec(double *arr, const size_t n)
+{
+    if (!arr)
+    {
+        // Null Pointer
+        THROW(CTB_NULL_POINTER_ERROR, "Received null pointer.");
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        arr[i] = i;
+    }
 }
 
-void division(double *arr, double denominator, const int n)
+```
+
+#### Output
+You should see the traceback below.
+```ansi
+
+--------------------------------------------------------------------------------
+Traceback (most recent call last):
+  (#00) File "/home/alvinng/Desktop/c_traceback/examples/example_tut02.c", line 25 in main:
+    initialize_vec(arr, 1000 * n)1dfs2
+SignalSegmentationFault
+--------------------------------------------------------------------------------
+Segmentation fault (core dumped)
+```
+
+### `TRACE_BLOCK` <Badge text="Macro" />
+Similar to [`TRY`](/docs/API/call_stack_management#try-) and [`TRY_BLOCK`](/docs/API/call_stack_management#try-block-),
+[`TRACE`](/docs/API/call_stack_management#trace-) and [`TRACE_BLOCK`](/docs/API/call_stack_management#trace-block-)
+manages the call stack automatically. However, they doesn't check for errors.
+
+Let's try wrapping the for loop using [`TRACE_BLOCK`](/docs/API/call_stack_management#trace-block-).
+
+```c {58-63}
+/**
+ * \file: example_tut03.c
+ */
+ 
+#include <stdio.h>
+#include <stdlib.h>
+ 
+#include "c_traceback.h"
+ 
+void alloc_memory(double **arr, const size_t n);
+void initialize_vec(double *arr, const size_t n);
+ 
+int main(void)
 {
+    ctb_install_signal_handler();
+
+    const size_t n = 1000;     // Vector size
+    const double denominator = 123.0;
+ 
+    /* Allocate memory */
+    double *arr;
+    TRY_GOTO(alloc_memory(&arr, n), error_clean_up);
+ 
+    /* Initialize values */
+    TRY_GOTO(initialize_vec(arr, 1000 * n), error_clean_up);
+ 
+    /* Division */
+ 
+    /* Clean up */
+    free(arr);
+    return 0;
+ 
+error_clean_up:
+    /* Error clean up */
+    free(arr);
+    ctb_dump_traceback();
+    return 1;
+}
+ 
+void alloc_memory(double **arr, const size_t n)
+{
+    *arr = malloc(n * sizeof(double));
+    if (!(*arr))
+    {
+        // Failed to allocate memory
+        THROW(CTB_MEMORY_ERROR, "Failed to allocate memory for vector!");
+    }
+}
+ 
+void initialize_vec(double *arr, const size_t n)
+{
+    if (!arr)
+    {
+        // Null Pointer
+        THROW(CTB_NULL_POINTER_ERROR, "Received null pointer.");
+    }
+
+    TRACE_BLOCK(
+        for (int i = 0; i < n; i++)
+        {
+            arr[i] = i;
+        }
+    );
+}
+
+```
+
+#### Output
+You should see the traceback below.
+```ansi {6-7}
+
+--------------------------------------------------------------------------------
+Traceback (most recent call last):
+  (#00) File "/home/alvinng/Desktop/c_traceback/examples/example_tut03.c", line 25 in main:
+    initialize_vec(arr, 1000 * n)
+  (#01) File "/home/alvinng/Desktop/c_traceback/examples/example_tut03.c", line 58 in initialize_vec:
+    for (int i = 0; i < n; i++) { arr[i] = i; }
+SignalSegmentationFault
+--------------------------------------------------------------------------------
+Segmentation fault (core dumped)
+```
+
+## Division
+This one is simple. We simply pass the array, `n` and denominator to the function.
+
+### `LOG_INLINE_WARNING_FMT` <Badge text="Function" />
+However, we need to be careful for division by zero. Typically, we don't want to
+throw an error immediately for these numerical issues, but log an warning message instead.
+```c
+void divide_vec(double *arr, const size_t n, const double denominator)
+{
+    if (denominator == 0.0)
+    {
+        // Division by zero
+        LOG_INLINE_WARNING_FMT(CTB_MATH_ERROR, "Denominator should not be zero! Received: %lf.", denominator);
+    }
+
     for (int i = 0; i < n; i++)
     {
         arr[i] /= denominator;
     }
 }
+```
+
+Same as before, let's pass `0.0` to `denominator` for testing.
+```c {19, 29, 68-80}
+/**
+ * \file: example_tut04.c
+ */
+ 
+#include <stdio.h>
+#include <stdlib.h>
+ 
+#include "c_traceback.h"
+ 
+void alloc_memory(double **arr, const size_t n);
+void initialize_vec(double *arr, const size_t n);
+void divide_vec(double *arr, const size_t n, const double denominator);
+ 
+int main(void)
+{
+    ctb_install_signal_handler();
+
+    const size_t n = 1000;     // Vector size
+    const double denominator = 0.0;
+ 
+    /* Allocate memory */
+    double *arr;
+    TRY_GOTO(alloc_memory(&arr, n), error_clean_up);
+ 
+    /* Initialize values */
+    TRY_GOTO(initialize_vec(arr, n), error_clean_up);
+ 
+    /* Division */
+    TRY_GOTO(divide_vec(arr, n, denominator), error_clean_up);
+ 
+    /* Clean up */
+    free(arr);
+    return 0;
+ 
+error_clean_up:
+    /* Error clean up */
+    free(arr);
+    ctb_dump_traceback();
+    return 1;
+}
+ 
+void alloc_memory(double **arr, const size_t n)
+{
+    *arr = malloc(n * sizeof(double));
+    if (!(*arr))
+    {
+        // Failed to allocate memory
+        THROW(CTB_MEMORY_ERROR, "Failed to allocate memory for vector!");
+    }
+}
+ 
+void initialize_vec(double *arr, const size_t n)
+{
+    if (!arr)
+    {
+        // Null Pointer
+        THROW(CTB_NULL_POINTER_ERROR, "Received null pointer.");
+    }
+
+    TRACE_BLOCK(
+        for (int i = 0; i < n; i++)
+        {
+            arr[i] = i;
+        }
+    );
+}
+
+void divide_vec(double *arr, const size_t n, const double denominator)
+{
+    if (denominator == 0.0)
+    {
+        // Division by zero
+        LOG_WARNING_INLINE_FMT(CTB_WARNING, "Denominator should not be zero! Received: %lf.", denominator);
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        arr[i] /= denominator;
+    }
+}
+
+```
+
+#### Output
+You should see the following output:
+```ansi
+[1;33mWarning:[0m [38;5;240mFile "[0m[38;5;240m/home/alvinng/Desktop/c_traceback/examples/[0m[1;36mexample_tut04.c[0m[38;5;240m", line[0m [1;36m73[0m [38;5;240min[0m [1;36mdivide_vec[0m:
+   [0;33mDenominator should not be zero! Received: 0.000000.[0m
 ```
