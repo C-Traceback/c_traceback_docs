@@ -9,7 +9,10 @@ import { Heart, Star, User } from 'lucide-react';
 
 A colorful, lightweight error-propagation framework for C.
 
-[Get Started →](/docs)
+* [Source Code](https://github.com/c-modules/c_traceback)
+* [Get Started →](/docs)
+
+<img src={"/images/general/compilation_info.png"} alt="C Traceback" />
 
 ## Features
 * Beautiful tracebacks
@@ -19,6 +22,56 @@ A colorful, lightweight error-propagation framework for C.
 * Works with MSVC, Clang and GCC
 * Written in C99 with minimal dependencies
 * Detailed documentations
+
+## Sample usage
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include "c_traceback.h"
+
+#define N 100
+
+static void do_calculation(double *vec);
+
+int main(void)
+{
+    ctb_clear_context();
+    ctb_install_signal_handler();
+
+    double *vec = malloc(N * sizeof(double));
+    if (!vec)
+    {
+        THROW(CTB_MEMORY_ERROR, "Failed to allocate memory");
+        goto error;
+    }
+
+    TRY_GOTO(do_calculation(vec), error);
+    printf("This shouldn't be printed if there is error\n");
+
+    free(vec);
+    return 0;
+
+error:
+    free(vec);
+    ctb_dump_traceback(); // Log traceback and reset context
+    return 0;
+}
+
+static void do_calculation(double *vec)
+{
+    // Initialize array
+    for (int i = 0; i < N; i++)
+    {
+        vec[i] = 0;
+    }
+
+    // Calculations
+    for (int i = 0; i < N; i++)
+    {
+        vec[i] += 10;
+    }
+}
+```
 
 ## Support Us
 {/* * <Heart size="1.1em" className="inline fill-red-400 stroke-red-400" />  [Sponsor](https://github.com/c-modules/c_traceback) */}
