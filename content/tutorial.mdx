@@ -2,10 +2,15 @@
 title: "Tutorial"
 description: "Tutorial for C Traceback"
 author: "Ching-Yin Ng"
-date: "2025-12-31"
+date: "2025-01-04"
 ---
 
 # Tutorial
+
+Here is a detailed tutorial for C Traceback.
+
+If you are not sure how to compile a C project with our library.
+check [Get Started](/docs).
 
 ## Project Setup
 
@@ -64,8 +69,8 @@ int alloc_memory(double **arr, const size_t n)
     return 0;
 }
 ```
-While the function is fine for a simple project, it is better to have an error traceback
-and error message, so that users know what happened when program crashes without having to go through
+While it is fine to return `1` for failure, it is better to have an error traceback
+and error message, so that users know what happened without having to go through
 your source code.
 
 ### `THROW` <Badge text="Macro" />
@@ -82,8 +87,8 @@ void alloc_memory(double **arr, const size_t n)
     }
 }
 ```
-However, it doesn't do much by itself as it only silently records an error.
-We will have to modify some code in the `main` function.
+However, this doesn't do much by itself as it only silently records an error.
+We will have to modify the `main` function.
 
 ### `TRY` <Badge text="Macro" />
 On the outer scope, we can wrap our function call with [`TRY`](/docs/API/call_stack_management#try-), which
