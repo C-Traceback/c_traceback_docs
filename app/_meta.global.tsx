@@ -28,14 +28,14 @@ export default {
         title: 'Documentation',
         items: DOCS_ITEMS
     },
-    sponsor: {
-        type: 'page',
-        "href": "https://github.com/c-modules/c_traceback",
-        title: (
-            <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                Sponsor
-                <Heart color="red" size="1.1em" /> 
-            </span>
-        )
-    },
+    // sponsor: {
+    //     type: 'page',
+    //     "href": "https://github.com/c-modules/c_traceback",
+    //     title: (
+    //         <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+    //             Sponsor
+    //             <Heart color="red" size="1.1em" /> 
+    //         </span>
+    //     )
+    // },
 }
