@@ -7,11 +7,28 @@ import {Metadata} from "next";
 import {getPagesFromPageMap} from "@/lib/getPagesFromPageMap";
 
 export const metadata: Metadata = {
+    metadataBase: new URL('https://ctraceback.com'), 
     title: {
         template: '%s - C Traceback',
         default: 'C Traceback'
     },
     description: 'A colorful, lightweight error-propagation framework for C.',
+    openGraph: {
+        images: [
+            {
+                url: "/images/general/compilation_info.png",
+                alt: "C Traceback"
+            }
+        ],
+        locale: 'en_US',
+        type: 'website',
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: 'C Traceback',
+        description: 'A colorful, lightweight error-propagation framework for C.',
+        images: ['/images/general/compilation_info.png'],
+    }
 }
 
 const navbar = (
