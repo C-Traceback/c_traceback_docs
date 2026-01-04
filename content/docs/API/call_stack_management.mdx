@@ -22,10 +22,9 @@ void TRACE(expr)
 ```
 
 <Callout type="info">
-Always use `TRY` instead of `TRACE` when error handling matters.
+Always use [`TRY`](#try-) instead of `TRACE` when error handling matters.
 It is easy to miss errors as `TRACE` are not checking for errors stored
 in context.
-[See `TRY`](/docs/API/call_stack_management#try-)
 </Callout>
 
 #### Parameters
@@ -66,10 +65,9 @@ void TRACE_BLOCK(...)
 ```
 
 <Callout type="info">
-Always call `ctb_check_error` after `TRACE_BLOCK` when error handling matters.
+Always call [`ctb_check_error`](/docs/API/throwing_errors#ctb_check_error-) after `TRACE_BLOCK` when error handling matters.
 It is easy to miss errors as `TRACE_BLOCK` are not checking for errors stored
 in context.
-[See `ctb_check_error`](/docs/API/throwing_errors#ctb_check_error-)
 </Callout>
 
 #### Parameters
