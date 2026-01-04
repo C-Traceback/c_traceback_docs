@@ -1,5 +1,5 @@
 ---
-title: Error Generation
+title: Throwing Errors and Logging
 ---
 
 import ParamsTable from "components/params-table.tsx";
@@ -208,5 +208,11 @@ void ctb_log_traceback(void);
 ```
 
 <Callout info="warning">You should use 
-`ctb_dump_traceback` unless the error
+[`ctb_dump_traceback`](#ctb_dump_traceback-) unless the error
 states are needed for further use.</Callout>
+
+### `ctb_log_call_stack` <Badge text="Function" />
+Log the current call stack to stderr.
+```c
+void ctb_log_call_stack(void);
+```

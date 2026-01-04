@@ -2,6 +2,8 @@
 title: Signal Handling
 ---
 
+import ParamsTable from "components/params-table.tsx";
+
 # Signal Handling
 When an application crashes due to a Segmentation Fault
 or Abort signal, the default behavior is often to terminate
@@ -74,3 +76,20 @@ During handling of the above exception, another exception occurred:
 SignalSegmentationFault
 --------------------------------------------------------------------------------
 ```
+
+### `ctb_dump_traceback_signal` <Badge text="Function" />
+Dump the traceback to stderr on signal error.
+```c
+void ctb_dump_traceback_signal(ctb_sig);
+```
+
+<Callout type="info">You can use this to write your own signal handler.
+As mentioned in [ctb_install_signal_handler](#ctb_install_signal_handler-),
+it works 99% of the time but is slightly unsafe.</Callout>
+
+#### Parameters
+<ParamsTable 
+  params={[
+    { name: "ctb_error", type: "CTB_Error", desc: "The signal error type." },
+  ]}
+/>

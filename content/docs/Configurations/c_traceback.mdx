@@ -1,0 +1,61 @@
+---
+title: C Traceback Configurations
+---
+
+# C Traceback Configurations
+Some compile-time constants can be customized. You can modify it
+at `include/c_traceback.h`.
+
+## Configurations
+### `CTB_TRACEBACK_HEADER` <Badge text="Variable" />
+Traceback header (i.e. the title printed at the top of the traceback output
+before "(most recent call last)"). It will be highlighted in bold.
+
+You can change this value to customize the header, e.g. "MyApp Traceback".
+If its value is NULL or an empty string, "Traceback" will be used.
+
+```c
+#define CTB_TRACEBACK_HEADER ""
+```
+
+### `CTB_MAX_CALL_STACK_DEPTH` <Badge text="Variable" />
+Maximum number of call stack frames
+```c
+#define CTB_MAX_CALL_STACK_DEPTH 32
+```
+
+### `CTB_MAX_NUM_ERROR` <Badge text="Variable" />
+Maximum number of simultaneous errors
+```c
+#define CTB_MAX_NUM_ERROR 16
+```
+
+### `CTB_MAX_ERROR_MESSAGE_LENGTH` <Badge text="Variable" />
+Maximum length of error message
+```c
+#define CTB_MAX_ERROR_MESSAGE_LENGTH 256
+```
+
+### `CTB_DEFAULT_TERMINAL_WIDTH` <Badge text="Variable" />
+Terminal width when it cannot be determined
+```c
+#define CTB_DEFAULT_TERMINAL_WIDTH 80
+```
+
+### `CTB_DEFAULT_FILE_WIDTH` <Badge text="Variable" />
+Default output width when printing to file
+```c
+#define CTB_DEFAULT_FILE_WIDTH 120
+```
+
+### `CTB_HRULE_MAX_WIDTH` <Badge text="Variable" />
+Maximum horizontal rule width.
+```c
+#define CTB_HRULE_MAX_WIDTH 120
+```
+
+### `CTB_HRULE_MIN_WIDTH` <Badge text="Variable" />
+Minimum horizontal rule width.
+```c
+#define CTB_HRULE_MIN_WIDTH 50
+```
