@@ -88,7 +88,7 @@ void alloc_memory(double **arr, const size_t n)
 }
 ```
 However, this doesn't do much by itself as it only silently records an error.
-We will have to modify the `main` function.
+We will also have to modify the outer scope.
 
 ### `TRY` <Badge text="Macro" />
 On the outer scope, we can wrap our function call with [`TRY`](/docs/API/call_stack_management#try-), which
@@ -302,6 +302,7 @@ SignalSegmentationFault
 --------------------------------------------------------------------------------
 Segmentation fault (core dumped)
 ```
+<Callout type="info">There is no colors and fancy output in signal handlers to ensure that it works on all systems.</Callout>
 
 ### `TRACE_BLOCK` <Badge text="Macro" />
 Similar to [`TRY`](/docs/API/call_stack_management#try-) and [`TRY_BLOCK`](/docs/API/call_stack_management#try-block-),
@@ -509,3 +510,9 @@ You should see the following output:
 [1;33mWarning:[0m [38;5;240mFile "[0m[38;5;240m/home/alvinng/Desktop/c_traceback/examples/[0m[1;36mexample_tut04.c[0m[38;5;240m", line[0m [1;36m73[0m [38;5;240min[0m [1;36mdivide_vec[0m:
    [0;33mDenominator should not be zero! Received: 0.000000.[0m
 ```
+
+## Closing Note
+To use our framework, make sure to
+* Clear context and install signal handler at program entry
+* Wrap function calls with either `TRACE` or `TRY`
+* Remember to check for errors
