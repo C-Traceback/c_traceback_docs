@@ -1,0 +1,16 @@
+---
+title: No exception handling?
+---
+
+# No exception handling?
+
+While we support the `Try` part in try/catch, we do not support `Catch` for multiple reasons:
+
+1. To support try and catch, we would need an error stack that could extends to arbitrary depth. However, for the following reasons,
+we decided to use a fixed amount of memory for the error stack:
+    * **Safety**
+    * Reduce complexity of our implementation
+2. C doesn't have exceptions handling, so adding catch would force users to learn a new way to write C, which is bad and makes our library over-complicated for users.
+3. You may be tempted to use `ctb_clear_error()` to do exceptions catching. It could be dangerous 
+if you have some previous errors that you forgot to handle, especially when we are not a language-level framework
+to enforce error checking and exiting.
