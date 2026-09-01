@@ -6,8 +6,10 @@ import {Metadata} from "next";
 // import {NextraSearchDialog} from "@/components/nextra-search-dialog";
 import {getPagesFromPageMap} from "@/lib/getPagesFromPageMap";
 
+const BASE_PATH = "/c_traceback";
+
 export const metadata: Metadata = {
-    metadataBase: new URL('https://ctraceback.com'), 
+    metadataBase: new URL('https://alvinng4.com'), 
     title: {
         template: '%s - C Traceback',
         default: 'C Traceback'
@@ -16,7 +18,7 @@ export const metadata: Metadata = {
     openGraph: {
         images: [
             {
-                url: "c_traceback/images/general/c_traceback.png",
+                url: `${BASE_PATH}/images/general/c_traceback.png`,
                 alt: "C Traceback"
             }
         ],
@@ -27,7 +29,7 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: 'C Traceback',
         description: 'A colorful, lightweight error-propagation framework for C.',
-        images: ['c_traceback/images/general/c_traceback.png'],
+        images: [`${BASE_PATH}/images/general/c_traceback.png`],
     }
 }
 
@@ -37,7 +39,7 @@ const navbar = (
         logo={
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <img
-                    src={"c_traceback/images/general/logo.svg"}
+                    src={`${BASE_PATH}/images/general/logo.svg`}
                     alt="Logo"
                     width={20}
                     height={20}
@@ -81,7 +83,7 @@ export default async function RootLayout({children}) {
                 {/* Your additional tags should be passed as `children` of `<Head>` element */}
                 <link
                     rel="icon"
-                    href="/c_traceback/images/general/logo.svg"
+                    href={`${BASE_PATH}/images/general/logo.svg`}
                 />
             </Head>
             <body>
@@ -94,7 +96,7 @@ export default async function RootLayout({children}) {
                         "attribute": "class",
                         "defaultTheme": "dark",
                         "disableTransitionOnChange": false,
-                        "storageKey": "theme"
+                        "storageKey": "c_traceback_theme"
                     }}
                     // footer={footer}
                     // search={
