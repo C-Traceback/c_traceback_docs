@@ -8,7 +8,7 @@
     "build": "next build && pnpm postbuild",
     "preview": "npx serve@latest out",
     "postbuild": "pagefind --site ./out --output-path ./out/_pagefind",
-    "deploy:cloudflare": "pnpm build && wrangler deploy"
+    "deploy": "pnpm build && node scripts/stage-cloudflare.mjs && wrangler deploy"
   },
   "repository": {
     "type": "module",
