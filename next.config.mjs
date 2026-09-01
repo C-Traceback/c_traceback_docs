@@ -9,6 +9,8 @@ const withNextra = nextra({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
+  basePath: "/c_traceback",
+  trailingSlash: true,
   images: { unoptimized: true }
 }
 

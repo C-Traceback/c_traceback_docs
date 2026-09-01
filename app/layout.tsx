@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     openGraph: {
         images: [
             {
-                url: "/images/general/c_traceback.png",
+                url: "c_traceback/images/general/c_traceback.png",
                 alt: "C Traceback"
             }
         ],
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: 'C Traceback',
         description: 'A colorful, lightweight error-propagation framework for C.',
-        images: ['/images/general/c_traceback.png'],
+        images: ['c_traceback/images/general/c_traceback.png'],
     }
 }
 
@@ -37,7 +37,7 @@ const navbar = (
         logo={
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <img
-                    src={"/images/general/logo.svg"}
+                    src={"c_traceback/images/general/logo.svg"}
                     alt="Logo"
                     width={20}
                     height={20}
@@ -81,7 +81,7 @@ export default async function RootLayout({children}) {
                 {/* Your additional tags should be passed as `children` of `<Head>` element */}
                 <link
                     rel="icon"
-                    href="/images/general/logo.svg"
+                    href="/c_traceback/images/general/logo.svg"
                 />
             </Head>
             <body>
