@@ -25,5 +25,5 @@ pnpm dev
 To deploy on Cloudflare Static Assets, run
 ```
 pnpm exec wrangler login
-pnpm run deploy:cloudflare
+pnpm run deploy
 ```
